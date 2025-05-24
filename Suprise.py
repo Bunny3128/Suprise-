@@ -1,62 +1,62 @@
 import streamlit as st
+import random
 
-# Initialize session state variables
-if 'current_question' not in st.session_state:
-    st.session_state.current_question = 0
-    st.session_state.score = 0
-    st.session_state.quiz_started = False
+st.set_page_config(page_title="Funny Friend Quiz", layout="centered")
 
-# Define quiz questions
-quiz_questions = [
-    {
-        'question': "What’s the best way to start a day?",
-        'options': ["Jumping out of bed yelling 'I'm late!'", "Snoozing the alarm 5 times", "Dancing to your favorite song", "Checking emails immediately"],
-        'answer': "Dancing to your favorite song"
-    },
-    {
-        'question': "If you were a fruit, what would you be?",
-        'options': ["Banana – always slipping up", "Apple – keeping doctors away", "Grapes – hanging in bunches", "Pineapple – sweet with a tough exterior"],
-        'answer': "Pineapple – sweet with a tough exterior"
-    },
-    {
-        'question': "What's your spirit animal?",
-        'options': ["Sloth – master of relaxation", "Cheetah – always on the move", "Owl – wise and nocturnal", "Cat – independent and curious"],
-        'answer': "Sloth – master of relaxation"
+# Title
+st.title("🎉 Surprise for My Best Friend!")
+
+# Greet your best friend
+st.header("Hi, Hello! 👋")
+st.write("Hope you're having a great day!")
+
+# Ask if they're bored
+bored = st.radio("Are you bored?", ["Yes", "No"])
+
+# Show quiz if bored
+if bored == "Yes":
+    st.subheader("Let's lighten the mood with a FUNNY quiz! 🤪")
+
+    questions = {
+        "What fruit is known for being *a-peeling*?": [
+            "Banana 🍌", "Apple 🍎", "Kiwi 🥝"
+        ],
+        "Why did the math book look sad?": [
+            "It had too many problems 😢", "It failed algebra", "It got divided"
+        ],
+        "What's orange and sounds like a parrot?": [
+            "A carrot 🥕", "An orange crow", "Pumpkin"
+        ]
     }
-]
 
-# Function to display the quiz
-def display_quiz():
-    question = quiz_questions[st.session_state.current_question]
-    st.subheader(f"Question {st.session_state.current_question + 1}: {question['question']}")
-    selected_option = st.radio("Choose your answer:", question['options'])
+    # Session state for quiz
+    if "q_num" not in st.session_state:
+        st.session_state.q_num = 0
+        st.session_state.score = 0
 
-    if st.button("Submit Answer"):
-        if selected_option == question['answer']:
-            st.success("Correct! 🎉")
-            st.session_state.score += 1
-        else:
-            st.error(f"Oops! The correct answer was: {question['answer']}")
-        
-        st.session_state.current_question += 1
+    q_keys = list(questions.keys())
 
-        if st.session_state.current_question < len(quiz_questions):
-            st.experimental_rerun()
-        else:
-            st.balloons()
-            st.success(f"Quiz Completed! Your Score: {st.session_state.score} / {len(quiz_questions)}")
-            if st.button("Restart Quiz"):
-                st.session_state.current_question = 0
-                st.session_state.score = 0
-                st.experimental_rerun()
+    if st.session_state.q_num < len(q_keys):
+        current_q = q_keys[st.session_state.q_num]
+        options = questions[current_q]
 
-# Main App
-st.title("👋 Hello, Bestie!")
-st.write("Hi there! Just wanted to say hello and see how you're doing.")
+        st.write(f"**Q{st.session_state.q_num+1}:** {current_q}")
+        answer = st.radio("Choose your answer:", options, key=f"q{st.session_state.q_num}")
 
-if not st.session_state.quiz_started:
-    if st.button("Are you bored? Let's find out!"):
-        st.session_state.quiz_started = True
-        st.experimental_rerun()
+        if st.button("Next"):
+            if options[0] == answer:  # Always the first option is funny/correct
+                st.session_state.score += 1
+            st.session_state.q_num += 1
+            st.rerun()
+    else:
+        st.success(f"🎉 Quiz Finished! You got {st.session_state.score} out of {len(q_keys)} right!")
+        if st.button("Restart Quiz"):
+            st.session_state.q_num = 0
+            st.session_state.score = 0
+            st.rerun()
 else:
-    display_quiz()
+    st.write("Okay then, go touch grass 🌱 or drink water 🚰 😄")
+
+# Footer
+st.markdown("---")
+st.caption("Made with ❤️ using Streamlit")
