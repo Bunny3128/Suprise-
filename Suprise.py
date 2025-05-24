@@ -20,7 +20,7 @@ st.markdown("""
 
 # ---- Welcome ----
 st.title("🎈 Hello Bestie! 🎈")
-st.markdown("<p class='big-font'>Welcome to the Most FUN App ✨</p>", unsafe_allow_html=True)
+st.markdown("<p class='big-font'>Welcome to the Most FUN App Made Just for You! 💖</p>", unsafe_allow_html=True)
 
 if 'start' not in st.session_state:
     st.session_state.start = False
@@ -29,16 +29,11 @@ if not st.session_state.start:
     if st.button("Say Hello 👋"):
         st.session_state.start = True
         st.balloons()
-        st.markdown("""
-        <audio autoplay>
-            <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
-        </audio>
-        """, unsafe_allow_html=True)
         time.sleep(1)
         st.rerun()
 else:
-    st.success("Yayyy! You're here, Bestie! 💃")
-    st.markdown("### Are you bored? Let's fix that with some fun! 🧠💥")
+    st.success("Yayyy! You're here, Bestie!")
+    st.markdown("### Are you bored? Let's fix that! 🧠💥")
     mood = st.radio("Are you feeling a bit bored?", ["Yes", "Nope, I'm good!"])
 
     if mood == "Yes":
@@ -67,16 +62,15 @@ else:
                 st.session_state.score = score
                 st.rerun()
         else:
-    st.success(f"Haha! You scored {score} out of {len(q_keys)} 😂")
-    if "show_puzzle_button" not in st.session_state:
-        st.session_state.show_puzzle_button = True
+            st.success(f"Haha! You scored {score} out of {len(q_keys)} 😂")
+            if "show_puzzle_button" not in st.session_state:
+                st.session_state.show_puzzle_button = True
 
-    if st.session_state.show_puzzle_button:
-        if st.button("🎲 Let's Play a Puzzle Now"):
-            st.session_state.puzzle = True
-            st.session_state.show_puzzle_button = False
-            st.rerun()
-
+            if st.session_state.show_puzzle_button:
+                if st.button("🎲 Let's Play a Puzzle Now"):
+                    st.session_state.puzzle = True
+                    st.session_state.show_puzzle_button = False
+                    st.rerun()
 
     # ---- Puzzles ----
     if st.session_state.get("puzzle", False):
@@ -88,30 +82,21 @@ else:
         if answer.lower().strip() == "echo":
             st.success("Correct! You're a genius bestie! 🧠💡")
             st.balloons()
-            st.markdown("""
-            <audio autoplay>
-                <source src='https://www.soundjay.com/human/sounds/applause-8.mp3' type='audio/mpeg'>
-            </audio>
-            """, unsafe_allow_html=True)
             st.session_state.puzzle = False
+            st.session_state.q_num = 0
+            st.session_state.score = 0
         elif answer:
             st.error("Oops! Try again 😊")
 
     # ---- Wrap Up ----
-    if not st.session_state.get("puzzle") and mood == "Yes" and q_num == len(q_keys):
+    if not st.session_state.get("puzzle") and mood == "Yes" and st.session_state.get("show_puzzle_button") == False:
         st.markdown("---")
         st.header("🎉 Great Job My Friend! 🎉")
-        st.markdown("You made it through the fun zone! Thanks for playing! ")
-        st.balloons()
+        st.markdown("You made it through the fun zone! Thanks for playing! 💕")
         st.snow()
-        st.markdown("""
-        <audio autoplay>
-            <source src='https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3' type='audio/mpeg'>
-        </audio>
-        """, unsafe_allow_html=True)
 
     elif mood == "Nope, I'm good!":
-        st.info("why the hell,you are not bored 😠")
+        st.info("Aww, glad you're not bored! Here's a hug anyway 🤗")
         st.image("https://media.giphy.com/media/l2Sqc3POpzkj5rWGs/giphy.gif", width=300)
 
 # Footer
