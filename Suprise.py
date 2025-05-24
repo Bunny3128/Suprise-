@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-import uuid
 
 # Set page configuration
 st.set_page_config(
@@ -79,6 +78,19 @@ st.markdown(
         50% { transform: scale(1.1); }
         100% { transform: scale(1); }
     }
+    .fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+        z-index: 1000;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -88,9 +100,6 @@ st.markdown(
 UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
-
-# Title of the dashboard
-st.markdown('<h1 class="title">Welcome to the Dashboard! 🦄🎶</h1>', unsafe_allow_html=True)
 
 # Initialize session state
 if 'clicked' not in st.session_state:
@@ -109,18 +118,29 @@ def toggle_click():
 def reset_click():
     st.session_state.clicked = False
 
-# Button to trigger greeting
-if st.button("Smash for Chapri! 😜", key="greet_button"):
-    toggle_click()
+# When not clicked, show the home page
+if not st.session_state.clicked:
+    # Title of the dashboard
+    st.markdown('<h1 class="title">Welcome to the Dashboard! 🦄🎶</h1>', unsafe_allow_html=True)
 
-# When button is clicked, display greeting and back button
+    # Smash for Chapri button
+    st.button("Smash for Chapri! 😜", key="greet_button", on_click=toggle_click)
+
+    # Display saved song if it exists
+    if st.session_state.song_path and os.path.exists(st.session_state.song_path):
+        if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
+            try:
+                with open(st.session_state.song_path, "rb") as f:
+                    st.audio(f.read(), format="audio/mp3")
+                st.write('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
+
+# When button is clicked, display full-screen greeting and back button
 if st.session_state.clicked:
-    # Greeting message
     st.markdown(
         """
-        <div style="position: relative; width: 100%; height: 50%; 
-        display: flex; flex-direction: column; justify-content: center; align-items: center; 
-        background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);">
+        <div class="fullscreen">
             <h1 class="greeting">Hello Chapri! 🌈</h1>
         </div>
         """,
@@ -130,13 +150,3 @@ if st.session_state.clicked:
     # Back button
     if st.button("Back to Party Start! 🚀", key="back_button"):
         reset_click()
-
-# Display saved song if it exists and not on greeting page
-if not st.session_state.clicked and st.session_state.song_path and os.path.exists(st.session_state.song_path):
-    if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
-        try:
-            with open(st.session_state.song_path, "rb") as f:
-                st.audio(f.read(), format="audio/mp3")
-            st.write('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
-        except Exception as e:
-            st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
