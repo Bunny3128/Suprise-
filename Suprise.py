@@ -67,12 +67,16 @@ else:
                 st.session_state.score = score
                 st.rerun()
         else:
-            st.success(f"Haha! You scored {score} out of {len(q_keys)} 😂")
-            st.session_state.q_num = 0
-            st.session_state.score = 0
-            if st.button("🎲 Let's Play a Puzzle Now"):
-                st.session_state.puzzle = True
-                st.rerun()
+    st.success(f"Haha! You scored {score} out of {len(q_keys)} 😂")
+    if "show_puzzle_button" not in st.session_state:
+        st.session_state.show_puzzle_button = True
+
+    if st.session_state.show_puzzle_button:
+        if st.button("🎲 Let's Play a Puzzle Now"):
+            st.session_state.puzzle = True
+            st.session_state.show_puzzle_button = False
+            st.rerun()
+
 
     # ---- Puzzles ----
     if st.session_state.get("puzzle", False):
