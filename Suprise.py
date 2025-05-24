@@ -19,39 +19,43 @@ if 'clicked' not in st.session_state:
 
 # Function to toggle clicked state
 def toggle_click():
-    st.session_state.clicked = not st.session_state.clicked
-    if st.session_state.clicked:
-        # Trigger balloon effect when button is clicked
-        st.balloons()
+    st.session_state.clicked = True
+    st.balloons()  # Trigger balloon effect
+    st.write("Debug: Click Here button triggered")  # Debug log
 
 # Function to reset clicked state
 def reset_click():
     st.session_state.clicked = False
-    st.experimental_rerun()  # Force app refresh to ensure state reset
+    st.write("Debug: Back button triggered")  # Debug log
+    st.experimental_rerun()  # Force refresh to ensure state reset
 
 # Generate a soothing sound (220 Hz + 440 Hz chord, 3 seconds) as WAV
 def generate_soothing_sound():
-    sample_rate = 44100  # Samples per second
-    seconds = 3  # Duration
-    t = np.linspace(0, seconds, seconds * sample_rate, False)
-    # Combine 220 Hz and 440 Hz for a soothing chord
-    note = 0.5 * np.sin(220 * t * 2 * np.pi) + 0.5 * np.sin(440 * t * 2 * np.pi)
-    # Normalize to 16-bit PCM format
-    note = np.int16(note / np.max(np.abs(note)) * 32767)
-    
-    # Create WAV file in memory
-    buffer = io.BytesIO()
-    with wave.open(buffer, 'wb') as wav:
-        wav.setnchannels(1)  # Mono
-        wav.setsampwidth(2)  # 16-bit
-        wav.setframerate(sample_rate)
-        wav.writeframes(note.tobytes())
-    
-    buffer.seek(0)
-    return buffer
+    try:
+        sample_rate = 44100  # Samples per second
+        seconds = 3  # Duration
+        t = np.linspace(0, seconds, seconds * sample_rate, False)
+        # Combine 220 Hz and 440 Hz for a soothing chord
+        note = 0.5 * np.sin(220 * t * 2 * np.pi) + 0.5 * np.sin(440 * t * 2 * np.pi)
+        # Normalize to 16-bit PCM format
+        note = np.int16(note / np.max(np.abs(note)) * 32767)
+        
+        # Create WAV file in memory
+        buffer = io.BytesIO()
+        with wave.open(buffer, 'wb') as wav:
+            wav.setnchannels(1)  # Mono
+            wav.setsampwidth(2)  # 16-bit
+            wav.setframerate(sample_rate)
+            wav.writeframes(note.tobytes())
+        
+        buffer.seek(0)
+        return buffer
+    except Exception as e:
+        st.error(f"Error generating sound: {str(e)}")
+        return None
 
 # Button to trigger the effect
-if st.button("Click Here", key="click_here"):
+if st.button("Click Here", key="click_here", on_click=toggle_click):
     pass
 
 # When button is clicked, display message, back button, file uploader, and play soothing sound
@@ -59,7 +63,7 @@ if st.session_state.clicked:
     # Full-screen message with space for buttons below
     st.markdown(
         """
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 60%; 
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 50%; 
         display: flex; flex-direction: column; justify-content: center; align-items: center; 
         background-color: rgba(0, 0, 0, 0.8); z-index: 1000;">
             <h1 style="color: white; font-size: 5rem; text-align: center; margin-bottom: 20px;">
@@ -82,7 +86,7 @@ if st.session_state.clicked:
             font-size: 16px; 
             font-weight: bold;
             cursor: pointer;
-            margin-top: 65vh; /* Adjusted for smaller overlay */
+            margin-top: 55vh; /* Adjusted for smaller overlay */
             display: block;
             text-align: center;
             z-index: 1001; /* Ensure button is above overlay */
@@ -95,11 +99,12 @@ if st.session_state.clicked:
         pass
 
     # Generate and play soothing sound
-    try:
-        audio_buffer = generate_soothing_sound()
-        st.audio(audio_buffer, format="audio/wav")
-    except Exception as e:
-        st.error(f"Error playing soothing sound: {str(e)}")
+    audio_buffer = generate_soothing_sound()
+    if audio_buffer:
+        try:
+            st.audio(audio_buffer, format="audio/wav")
+        except Exception as e:
+            st.error(f"Error playing soothing sound: {str(e)}")
 
     # File uploader for song
     uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"], key="file_uploader")
@@ -112,13 +117,7 @@ if st.session_state.clicked:
             except Exception as e:
                 st.error(f"Error playing uploaded song: {str(e)}")
         else:
-            try:
-                default_song = open("ambient_song.mp3", "rb").read()
-                st.audio(default_song, format="audio/mpeg")
-            except FileNotFoundError:
-                st.error("Default song 'ambient_song.mp3' not found. Please upload a song.")
-            except Exception as e:
-                st.error(f"Error playing default song: {str(e)}")
+            st.error("Please upload a song.")  # Removed default song to avoid FileNotFoundError
 
 # Debugging information
 st.write(f"Debug: App is in {'clicked' if st.session_state.clicked else 'initial'} state")
