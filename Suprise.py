@@ -97,7 +97,7 @@ else:
     if not st.session_state.get("puzzle") and mood == "Yes" and q_num == len(q_keys):
         st.markdown("---")
         st.header("🎉 Great Job My Friend! 🎉")
-        st.markdown("You made it through the fun zone! Thanks for playing! 💕")
+        st.markdown("You made it through the fun zone! Thanks for playing! ")
         st.balloons()
         st.snow()
         st.markdown("""
