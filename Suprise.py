@@ -107,7 +107,6 @@ def save_song(uploaded_file):
         song_path = "uploaded_song.mp3"
         with open(song_path, "wb") as f:
             f.write(uploaded_file.read())
-        st.write(f'<p class="debug-text">Debug: Song saved at {song_path}! 🎵</p>', unsafe_allow_html=True)
         st.markdown(
             """
             <p style="color: #ffffff; font-size: 1.2rem; background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 5px;">
@@ -147,7 +146,6 @@ if st.session_state.clicked:
 if not st.session_state.clicked:
     song_path = "uploaded_song.mp3"
     if os.path.exists(song_path):
-        st.markdown('<p class="debug-text">Debug: Found a saved banger! Ready to jam! 🎸</p>', unsafe_allow_html=True)
         if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
             try:
                 with open(song_path, "rb") as f:
