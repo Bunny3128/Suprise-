@@ -94,12 +94,11 @@ if 'clicked' not in st.session_state:
 def toggle_click():
     st.session_state.clicked = True
     st.balloons()
-    st.write('<p class="debug-text">Debug: Yo, Chapri button smashed! 💥</p>', unsafe_allow_html=True)
+   
 
 # Function to reset clicked state
 def reset_click():
     st.session_state.clicked = False
-    st.write('<p class="debug-text">Debug: Back to the chill zone! 😎</p>', unsafe_allow_html=True)
     st.experimental_rerun()
 
 # Function to save uploaded song
@@ -143,21 +142,6 @@ if st.session_state.clicked:
     # Back button
     if st.button("Back to Party Start! 🚀", key="back_button", on_click=reset_click):
         pass
-
-    # File uploader for songs
-    uploaded_file = st.file_uploader("Upload Your Banger! 🎵", type=["mp3"], key="song_uploader")
-    if uploaded_file is not None:
-        song_path = save_song(uploaded_file)
-        if song_path:
-            with open(song_path, "rb") as f:
-                st.audio(f.read(), format="audio/mp3")
-            st.download_button(
-                label="Download Your Banger! 💾",
-                data=open(song_path, "rb").read(),
-                file_name="my_chapri_banger.mp3",
-                mime="audio/mp3",
-                key="download_button"
-            )
 
 # Display saved song if it exists
 if not st.session_state.clicked:
