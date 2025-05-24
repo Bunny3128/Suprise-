@@ -1,7 +1,5 @@
 import streamlit as st
-from streamlit.components.v1 import html
-
-08
+import numpy as np
 
 # Set page configuration
 st.set_page_config(
@@ -24,11 +22,20 @@ def toggle_click():
         # Trigger balloon effect when button is clicked
         st.balloons()
 
+# Generate a 440 Hz sine wave sound (2 seconds)
+def generate_sound():
+    sample_rate = 44100  # Samples per second
+    seconds = 2  # Duration
+    frequency = 440  # 440 Hz (A4 note)
+    t = np.linspace(0, seconds, seconds * sample_rate, False)
+    note = np.sin(frequency * t * 2 * np.pi)
+    return note, sample_rate
+
 # Button to trigger the effect
 if st.button("Click Here", on_click=toggle_click):
     pass
 
-# When button is clicked, display message and play sound button
+# When button is clicked, display message, play sound button, and audio
 if st.session_state.clicked:
     # Full-screen message with Play Sound button
     st.markdown(
@@ -39,38 +46,15 @@ if st.session_state.clicked:
             <h1 style="color: white; font-size: 5rem; text-align: center; margin-bottom: 20px;">
                 Hello Chapri
             </h1>
-            <button onclick="playSound()" 
+            <button onclick="document.getElementById('audio').play()" 
                 style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
                 Play Sound
             </button>
         </div>
-        <script>
-            function playSound() {
-                try {
-                    var audio = new Audio('https://cdn.pixabay.com/audio/2022/03/24/00-16-27-297_140.mp3');
-                    audio.play().then(() => {
-                        console.log('Audio playback successful');
-                    }).catch(error => {
-                        console.error('Audio playback failed:', error);
-                    });
-                } catch (error) {
-                    console.error('Error in playSound:', error);
-                }
-            }
-            // Attempt automatic playback
-            document.addEventListener('DOMContentLoaded', function() {
-                try {
-                    var audio = new Audio('https://cdn.pixabay.com/audio/2022/03/24/00-16-27-297_140.mp3');
-                    audio.play().then(() => {
-                        console.log('Automatic audio playback successful');
-                    }).catch(error => {
-                        console.error('Automatic audio playback failed:', error);
-                    });
-                } catch (error) {
-                    console.error('Error in auto-play:', error);
-                }
-            });
-        </script>
         """,
         unsafe_allow_html=True
     )
+    
+    # Generate and play sound
+    note, sample_rate = generate_sound()
+    st.audio(note, sample_rate=sample_rate, autoplay=True)
