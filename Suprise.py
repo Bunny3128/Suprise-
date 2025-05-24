@@ -15,7 +15,8 @@ if 'clicked' not in st.session_state:
     st.session_state.clicked = False
 if 'uploaded_song' not in st.session_state:
     st.session_state.uploaded_song = None
-if 'uploaded_song_type' not in st _
+if 'uploaded_song_type' not in st.session_state:
+    st.session_state.uploaded_song_type = None
 
 # Function to toggle clicked state
 def toggle_click():
