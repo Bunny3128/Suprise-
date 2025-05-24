@@ -59,6 +59,12 @@ if st.session_state.clicked:
     uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"])
     
     # Play Song button
-    if uploaded_file is not None:
-        if st.button("Play Song"):
+    if st.button("Play Song"):
+        if uploaded_file is not None:
             st.audio(uploaded_file, format=uploaded_file.type)
+        else:
+            try:
+                default_song = open("ambient_song.mp3", "rb").read()
+                st.audio(default_song, format="audio/mpeg")
+            except FileNotFoundError:
+                st.error("Default song 'ambient_song.mp3' not found. Please upload a song.")
