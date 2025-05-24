@@ -220,4 +220,4 @@ else:
 
 # ---- Footer ----
 st.markdown("---")
-st.caption("💃 Made with Tollywood Masala & Streamlit Swag! 🎬")
+st.caption("💃 Made with Tollywood Masala & Streamlit Swag! ")
