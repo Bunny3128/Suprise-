@@ -29,11 +29,16 @@ if not st.session_state.start:
     if st.button("Say Hello 👋"):
         st.session_state.start = True
         st.balloons()
+        st.markdown("""
+        <audio autoplay>
+            <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
+        </audio>
+        """, unsafe_allow_html=True)
         time.sleep(1)
         st.rerun()
 else:
-    st.success("Yayyy! You're here, Bestie!")
-    st.markdown("### Are you bored? Let's fix that! 🧠💥")
+    st.success("Yayyy! You're here, Bestie! 💃")
+    st.markdown("### Are you bored? Let's fix that with some fun! 🧠💥")
     mood = st.radio("Are you feeling a bit bored?", ["Yes", "Nope, I'm good!"])
 
     if mood == "Yes":
@@ -79,6 +84,11 @@ else:
         if answer.lower().strip() == "echo":
             st.success("Correct! You're a genius bestie! 🧠💡")
             st.balloons()
+            st.markdown("""
+            <audio autoplay>
+                <source src='https://www.soundjay.com/human/sounds/applause-8.mp3' type='audio/mpeg'>
+            </audio>
+            """, unsafe_allow_html=True)
             st.session_state.puzzle = False
         elif answer:
             st.error("Oops! Try again 😊")
@@ -88,7 +98,13 @@ else:
         st.markdown("---")
         st.header("🎉 Great Job My Friend! 🎉")
         st.markdown("You made it through the fun zone! Thanks for playing! 💕")
+        st.balloons()
         st.snow()
+        st.markdown("""
+        <audio autoplay>
+            <source src='https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3' type='audio/mpeg'>
+        </audio>
+        """, unsafe_allow_html=True)
 
     elif mood == "Nope, I'm good!":
         st.info("Aww, glad you're not bored! Here's a hug anyway 🤗")
