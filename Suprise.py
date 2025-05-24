@@ -1,8 +1,7 @@
 import streamlit as st
 import numpy as np
-import sounddevice as sd  # For generating valid audio
-import scipy.io.wavfile as wavfile  # For saving audio to WAV format
-import os
+import io
+import wave
 
 # Set page configuration
 st.set_page_config(
@@ -28,20 +27,28 @@ def toggle_click():
 # Function to reset clicked state
 def reset_click():
     st.session_state.clicked = False
+    st.experimental_rerun()  # Force app refresh to ensure state reset
 
-# Generate a soothing sound (220 Hz + 440 Hz chord, 3 seconds) and save as WAV
+# Generate a soothing sound (220 Hz + 440 Hz chord, 3 seconds) as WAV
 def generate_soothing_sound():
     sample_rate = 44100  # Samples per second
     seconds = 3  # Duration
     t = np.linspace(0, seconds, seconds * sample_rate, False)
     # Combine 220 Hz and 440 Hz for a soothing chord
     note = 0.5 * np.sin(220 * t * 2 * np.pi) + 0.5 * np.sin(440 * t * 2 * np.pi)
-    # Normalize to 16-bit PCM format for WAV
+    # Normalize to 16-bit PCM format
     note = np.int16(note / np.max(np.abs(note)) * 32767)
-    # Save to temporary WAV file
-    wav_path = "temp_soothing_sound.wav"
-    wavfile.write(wav_path, sample_rate, note)
-    return wav_path
+    
+    # Create WAV file in memory
+    buffer = io.BytesIO()
+    with wave.open(buffer, 'wb') as wav:
+        wav.setnchannels(1)  # Mono
+        wav.setsampwidth(2)  # 16-bit
+        wav.setframerate(sample_rate)
+        wav.writeframes(note.tobytes())
+    
+    buffer.seek(0)
+    return buffer
 
 # Button to trigger the effect
 if st.button("Click Here", key="click_here"):
@@ -89,11 +96,8 @@ if st.session_state.clicked:
 
     # Generate and play soothing sound
     try:
-        wav_path = generate_soothing_sound()
-        with open(wav_path, "rb") as f:
-            st.audio(f.read(), format="audio/wav")
-        # Clean up temporary file
-        os.remove(wav_path)
+        audio_buffer = generate_soothing_sound()
+        st.audio(audio_buffer, format="audio/wav")
     except Exception as e:
         st.error(f"Error playing soothing sound: {str(e)}")
 
@@ -117,7 +121,4 @@ if st.session_state.clicked:
                 st.error(f"Error playing default song: {str(e)}")
 
 # Debugging information
-if st.session_state.clicked:
-    st.write("Debug: App is in clicked state")
-else:
-    st.write("Debug: App is in initial state")
+st.write(f"Debug: App is in {'clicked' if st.session_state.clicked else 'initial'} state")
