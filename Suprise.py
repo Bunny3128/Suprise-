@@ -21,27 +21,30 @@ st.markdown("""
 
 # ---- Sound Effect ----
 def autoplay_audio(file_path: str):
-    with open(file_path, "rb") as f:
-        data = f.read()
-        b64 = base64.b64encode(data).decode()
-        md = f"""
-            <audio autoplay>
-            <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-            </audio>
-        """
-        st.markdown(md, unsafe_allow_html=True)
+    try:
+        with open(file_path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            md = f"""
+                <audio autoplay>
+                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                </audio>
+            """
+            st.markdown(md, unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.warning("⚠️ Audio file not found. Skipping sound effect.")
 
 # ---- Welcome ----
 st.title("🎈 Hello Bestie! 🎈")
-st.markdown("<p class='big-font'>Welcome to the Most FUN App Made Just for You! ✨</p>", unsafe_allow_html=True)
-
+st.markdown("<p class='big-font'>Welcome to the Most FUN App ✨</p>", unsafe_allow_html=True)
+✨
 if 'start' not in st.session_state:
     st.session_state.start = False
 
 if not st.session_state.start:
     if st.button("Say Hello 👋"):
         st.session_state.start = True
-        autoplay_audio("hello.mp3")  # Add a file named 'hello.mp3' to the directory
+        autoplay_audio("hello.mp3")
         st.balloons()
         time.sleep(1.5)
         st.rerun()
@@ -90,44 +93,43 @@ else:
     if st.session_state.get("puzzle", False):
         st.markdown("---")
         st.header("🎮 Fun Puzzle Game!")
-        game_choice = st.radio("Choose your puzzle:", ["Match the Pattern", "Guess the Number", "Solve Emoji Meaning"])
+        game_choice = st.radio("Choose your puzzle:", ["Jigsaw Word Puzzle", "Number Maze", "Emoji Movie Decode"])
 
-        if game_choice == "Match the Pattern":
-            st.write("🔢 Fill in the missing number: 2, 4, 8, 16, ?")
-            match_ans = st.number_input("Enter your answer:", min_value=0, step=1, key="match")
-            if st.button("Submit Pattern Answer"):
-                if match_ans == 32:
-                    st.success("Correct! Doubling pattern! 🧠")
+        if game_choice == "Jigsaw Word Puzzle":
+            st.write("🔤 Rearrange these jumbled letters to form a word: **LCOHESO**")
+            word_ans = st.text_input("Your answer:").lower()
+            if st.button("Check Word"):
+                if word_ans == "school":
+                    st.success("You nailed it! 📚")
                     st.balloons()
                 else:
-                    st.error("Nope, try again!")
+                    st.error("Try again, bestie!")
 
-        elif game_choice == "Guess the Number":
-            if "secret" not in st.session_state:
-                st.session_state.secret = random.randint(1, 10)
-            guess = st.number_input("Guess the number between 1 and 10:", min_value=1, max_value=10, step=1, key="guess")
-            if st.button("Guess 🎯"):
-                if guess == st.session_state.secret:
-                    st.success("Woohoo! You got it!")
+        elif game_choice == "Number Maze":
+            st.write("🧠 Which number completes this sequence: 5, 10, 20, 40, ?")
+            num_ans = st.number_input("Enter your answer:", min_value=0, step=1)
+            if st.button("Submit Number"):
+                if num_ans == 80:
+                    st.success("Woohoo! You cracked it! 💥")
                     st.balloons()
                 else:
-                    st.warning("Try again, bestie!")
+                    st.warning("Give it another shot!")
 
-        elif game_choice == "Solve Emoji Meaning":
-            st.write("🧠 What movie is this? 🍿👮‍♂️🔫")
-            emoji_ans = st.text_input("Your answer:").lower()
+        elif game_choice == "Emoji Movie Decode":
+            st.write("🎥 Guess this Tollywood movie from emojis: 🕺💃🌧️")
+            emoji_ans = st.text_input("Your guess:").lower()
             if st.button("Submit Emoji Guess"):
-                if "gabbar singh" in emoji_ans:
-                    st.success("Bang on! It’s Gabbar Singh! 🎬")
+                if "happy days" in emoji_ans:
+                    st.success("Yesss! That’s right! 🥳")
                     st.balloons()
                 else:
-                    st.error("Oops! Think of a police + action movie!")
+                    st.error("Oops! Hint: Dance + College + Rain")
 
     # ---- Wrap Up ----
     if not st.session_state.get("puzzle") and mood == "Yes" and st.session_state.get("show_puzzle_button") == False:
         st.markdown("---")
         st.header("🎉 Great Job My Friend! 🎉")
-        autoplay_audio("clap.mp3")  # Add a file named 'clap.mp3' to the directory
+        autoplay_audio("clap.mp3")
         st.markdown("You made it through the fun zone! Thanks for playing! ")
         st.snow()
 
