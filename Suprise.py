@@ -36,15 +36,15 @@ def generate_soothing_sound():
     return note, sample_rate
 
 # Button to trigger the effect
-if st.button("Click Here", on_click=toggle_click):
+if st.button("Click Here", key="click_here"):
     pass
 
 # When button is clicked, display message, back button, file uploader, and play soothing sound
 if st.session_state.clicked:
-    # Full-screen message
+    # Full-screen message with space for buttons below
     st.markdown(
         """
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 80%; 
         display: flex; flex-direction: column; justify-content: center; align-items: center; 
         background-color: rgba(0, 0, 0, 0.8); z-index: 1000;">
             <h1 style="color: white; font-size: 5rem; text-align: center; margin-bottom: 20px;">
@@ -55,8 +55,27 @@ if st.session_state.clicked:
         unsafe_allow_html=True
     )
 
-    # Back button to return to initial state
-    if st.button("Back", on_click=reset_click):
+    # Back button styled for visibility
+    st.markdown(
+        """
+        <style>
+        .back-button {
+            background-color: #ff4b4b; 
+            color: white; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            font-size: 16px; 
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 85vh; /* Position below the overlay */
+            display: block;
+            text-align: center;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    if st.button("Back", key="back_button", on_click=reset_click):
         pass
 
     # Generate and play soothing sound automatically
@@ -64,10 +83,10 @@ if st.session_state.clicked:
     st.audio(note, sample_rate=sample_rate, autoplay=True)
     
     # File uploader for song
-    uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"])
+    uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"], key="file_uploader")
     
     # Play Song button
-    if st.button("Play Song"):
+    if st.button("Play Song", key="play_song"):
         if uploaded_file is not None:
             st.audio(uploaded_file, format=uploaded_file.type)
         else:
