@@ -1,85 +1,57 @@
 import streamlit as st
-import base64
+from streamlit.components.v1 import html
 
 # Set page configuration
-st.set_page_config(page_title="Hello Bestie! 🎉", layout="centered")
+st.set_page_config(
+    page_title="Chapri Dashboard",
+    page_icon="🎉",
+    layout="wide"
+)
 
-# ---- Style ----
-st.markdown("""
-    <style>
-    .big-font {
-        font-size: 48px !important;
-        color: #ff6b6b;
-        font-family: 'Arial', sans-serif;
-        font-weight: bold;
-        text-align: center;
-        margin-top: 50px;
-        text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-        animation: float 2s ease-in-out infinite;
-    }
-    .fun-button {
-        background-color: #ff6b6b;
-        color: white;
-        font-size: 20px;
-        padding: 15px 30px;
-        border-radius: 12px;
-        display: block;
-        margin: 50px auto;
-        transition: transform 0.3s;
-    }
-    .fun-button:hover {
-        transform: scale(1.1);
-    }
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
-    }
-    .footer {
-        text-align: center;
-        color: #666;
-        font-size: 14px;
-        margin-top: 30px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Title of the dashboard
+st.title("Welcome to the Chapri Dashboard!")
 
-# ---- Sound Effect Function ----
-def autoplay_audio(file_path: str, key: str = "audio"):
-    try:
-        with open(file_path, "rb") as f:
-            data = f.read()
-            b64 = base64.b64encode(data).decode()
-            md = f"""
-                <audio autoplay id="{key}">
-                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                </audio>
-            """
-            st.markdown(md, unsafe_allow_html=True)
-    except FileNotFoundError:
-        st.error(f"⚠️ Audio file '{file_path}' not found! Please place 'hello.mp3' in the same directory as hello_bestie.py.")
-    except Exception as e:
-        st.error(f"⚠️ Error loading audio '{file_path}': {str(e)}")
+# Initialize session state for button click
+if 'clicked' not in st.session_state:
+    st.session_state.clicked = False
 
-# ---- Dashboard ----
-if 'show_greeting' not in st.session_state:
-    st.session_state.show_greeting = False
+# Function to toggle clicked state
+def toggle_click():
+    st.session_state.clicked = not st.session_state.clicked
 
-if not st.session_state.show_greeting:
-    if st.button("Say Hello Bestie! 🎉", key="greet_button", help="Click to see the magic!"):
-        st.session_state.show_greeting = True
-        autoplay_audio("hello.mp3", key="hello_audio")
-        try:
-            st.confetti()
-        except AttributeError:
-            st.balloons()
-        st.rerun()
-else:
-    st.markdown("<p class='big-font'>Hello Bestie!</p>", unsafe_allow_html=True)
-    try:
-        st.confetti()
-    except AttributeError:
-        st.balloons()
+# Button to trigger the effect
+if st.button("Click Here", on_click=toggle_click):
+    pass
 
-# ---- Footer ----
-st.markdown("<p class='footer'>Made with 💖 and Streamlit Sparkle</p>", unsafe_allow_html=True)
+# When button is clicked, display message, confetti, and play sound
+if st.session_state.clicked:
+    # Full-screen message
+    st.markdown(
+        """
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        display: flex; justify-content: center; align-items: center; 
+        background-color: rgba(0, 0, 0, 0.8); z-index: 1000;">
+            <h1 style="color: white; font-size: 5rem; text-align: center;">
+                Hello Chapri
+            </h1>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    
+    # JavaScript for confetti effect and audio playback
+    confetti_script = """
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        // Trigger confetti effect
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+        // Play confetti sound
+        var audio = new Audio('https://cdn.pixabay.com/audio/2023/06/08/audio_5d3a4b5e67.mp3');
+        audio.play();
+    </script>
+    """
+    html(confetti_script, height=0)
