@@ -107,7 +107,7 @@ else:
         """, unsafe_allow_html=True)
 
     elif mood == "Nope, I'm good!":
-        st.info("Aww, glad you're not bored! Here's a hug anyway 🤗")
+        st.info("why the hell,you are not bored 😠")
         st.image("https://media.giphy.com/media/l2Sqc3POpzkj5rWGs/giphy.gif", width=300)
 
 # Footer
