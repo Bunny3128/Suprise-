@@ -34,7 +34,7 @@ def generate_soothing_sound():
     try:
         sample_rate = 44100  # Samples per second
         seconds = 3  # Duration
-        t = np.linspace(0, seconds, seconds * sample_rate, False)
+        t = np.linspace(0, seconds, int(seconds * sample_rate), False)
         # Combine 220 Hz and 440 Hz for a soothing chord
         note = 0.5 * np.sin(220 * t * 2 * np.pi) + 0.5 * np.sin(440 * t * 2 * np.pi)
         # Normalize to 16-bit PCM format
@@ -103,8 +103,11 @@ if st.session_state.clicked:
     if audio_buffer:
         try:
             st.audio(audio_buffer, format="audio/wav")
+            st.write("Debug: Soothing sound should be playing")  # Confirm audio attempt
         except Exception as e:
             st.error(f"Error playing soothing sound: {str(e)}")
+    else:
+        st.error("Failed to generate soothing sound")
 
     # File uploader for song
     uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"], key="file_uploader")
@@ -117,7 +120,7 @@ if st.session_state.clicked:
             except Exception as e:
                 st.error(f"Error playing uploaded song: {str(e)}")
         else:
-            st.error("Please upload a song.")  # Removed default song to avoid FileNotFoundError
+            st.error("Please upload a song.")
 
 # Debugging information
 st.write(f"Debug: App is in {'clicked' if st.session_state.clicked else 'initial'} state")
