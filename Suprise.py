@@ -1,67 +1,40 @@
 import streamlit as st
-import numpy as np
-import io
-import wave
 
 # Set page configuration
 st.set_page_config(
-    page_title="Chapri Dashboard",
-    page_icon="🎈",
+    page_title="Chapri Greeter",
+    page_icon="🎉",
     layout="wide"
 )
 
 # Title of the dashboard
-st.title("Welcome to the Chapri Dashboard!")
+st.title("Chapri Greeter for My Best Friend!")
 
 # Initialize session state
 if 'clicked' not in st.session_state:
     st.session_state.clicked = False
 if 'uploaded_song' not in st.session_state:
     st.session_state.uploaded_song = None
-if 'uploaded_song_type' not in st.session_state:
-    st.session_state.uploaded_song_type = None
+if 'uploaded_song_type' not in st _
 
 # Function to toggle clicked state
 def toggle_click():
     st.session_state.clicked = True
     st.balloons()  # Trigger balloon effect
-    st.write("Debug: Click Here button triggered")
+    st.write("Debug: Greet button clicked")
 
 # Function to reset clicked state
 def reset_click():
     st.session_state.clicked = False
-    st.write("Debug: Back button triggered")
     st.experimental_rerun()  # Force refresh
 
-# Generate a soothing sound (220 Hz + 440 Hz chord, 3 seconds) as WAV
-def generate_soothing_sound():
-    try:
-        sample_rate = 44100
-        seconds = 3
-        t = np.linspace(0, seconds, int(seconds * sample_rate), False)
-        note = 0.5 * np.sin(220 * t * 2 * np.pi) + 0.5 * np.sin(440 * t * 2 * np.pi)
-        note = np.int16(note / np.max(np.abs(note)) * 32767)
-        
-        buffer = io.BytesIO()
-        with wave.open(buffer, 'wb') as wav:
-            wav.setnchannels(1)
-            wav.setsampwidth(2)
-            wav.setframerate(sample_rate)
-            wav.writeframes(note.tobytes())
-        
-        buffer.seek(0)
-        return buffer
-    except Exception as e:
-        st.error(f"Error generating sound: {str(e)}")
-        return None
-
-# Button to trigger the effect
-if st.button("Click Here", key="click_here", on_click=toggle_click):
+# Button to trigger greeting
+if st.button("Greet Chapri!", key="greet_button", on_click=toggle_click):
     pass
 
-# When button is clicked, display message, back button, file uploader, and play sound
+# When button is clicked, display greeting, back button, and file uploader
 if st.session_state.clicked:
-    # Full-screen message
+    # Greeting message
     st.markdown(
         """
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 50%; 
@@ -99,23 +72,12 @@ if st.session_state.clicked:
     if st.button("Back", key="back_button", on_click=reset_click):
         pass
 
-    # Generate and play soothing sound
-    audio_buffer = generate_soothing_sound()
-    if audio_buffer:
-        try:
-            st.audio(audio_buffer, format="audio/wav")
-            st.write("Debug: Soothing sound attempted")
-        except Exception as e:
-            st.error(f"Error playing soothing sound: {str(e)}")
-    else:
-        st.error("Failed to generate soothing sound")
-
     # File uploader for song
     uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"], key="file_uploader")
     if uploaded_file is not None:
-        st.session_state.uploaded_song = uploaded_file.read()  # Store file in session state
+        st.session_state.uploaded_song = uploaded_file.read()
         st.session_state.uploaded_song_type = uploaded_file.type
-        st.write("Debug: Song uploaded and stored in session state")
+        st.write("Debug: Song uploaded and stored")
 
     # Play Song button
     if st.button("Play Song", key="play_song"):
@@ -124,7 +86,7 @@ if st.session_state.clicked:
                 st.audio(st.session_state.uploaded_song, format=st.session_state.uploaded_song_type)
                 st.write("Debug: Playing uploaded song")
             except Exception as e:
-                st.error(f"Error playing uploaded song: {str(e)}")
+                st.error(f"Error playing song: {str(e)}")
         else:
             st.error("Please upload a song.")
 
