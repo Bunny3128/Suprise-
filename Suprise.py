@@ -57,7 +57,6 @@ st.markdown(
         font-size: 1.2rem;
         font-weight: bold;
         cursor: pointer;
-        margin-top: 55vh;
         display: block;
         text-align: center;
         z-index: 1001;
@@ -136,15 +135,29 @@ if st.session_state.clicked:
         display: flex; flex-direction: column; justify-content: center; align-items: center; 
         background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); z-index: 1000;">
             <h1 class="greeting">Hello Chapri! 🌈</h1>
-            <button class="back-button" onclick="window.location.reload()">Back to Party Start! 🚀</button>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Back button functionality handled by Streamlit
-    if st.button("Back to Party Start! 🚀", key="back_button"):
-        reset_click()
+    # Back button
+    if st.button("Back to Party Start! 🚀", key="back_button", on_click=reset_click):
+        pass
+
+    # File uploader for songs
+    uploaded_file = st.file_uploader("Upload Your Banger! 🎵", type=["mp3"], key="song_uploader")
+    if uploaded_file is not None:
+        song_path = save_song(uploaded_file)
+        if song_path:
+            with open(song_path, "rb") as f:
+                st.audio(f.read(), format="audio/mp3")
+            st.download_button(
+                label="Download Your Banger! 💾",
+                data=open(song_path, "rb").read(),
+                file_name="my_chapri_banger.mp3",
+                mime="audio/mp3",
+                key="download_button"
+            )
 
 # Display saved song if it exists
 if not st.session_state.clicked:
