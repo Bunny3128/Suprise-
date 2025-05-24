@@ -13,7 +13,7 @@ st.markdown(
     """
     <style>
     .main {
-        background: linear-gradient(135deg, #ff6ec4, #7873f5);
+        background: linear-gradient(135deg, #ff6ec4, #7873f5, #00f7ff);
         padding: 20px;
         border-radius: 15px;
         box-shadow: 0 0 20px rgba(0,0,0,0.3);
@@ -23,7 +23,7 @@ st.markdown(
         font-family: 'Comic Sans MS', cursive, sans-serif;
         font-size: 3.5rem;
         text-align: center;
-        text-shadow: 2px 2px #ff0000;
+        text-shadow: 3px 3px #ff1744;
         animation: bounce 2s infinite;
     }
     .greeting {
@@ -94,7 +94,7 @@ if 'clicked' not in st.session_state:
 # Function to toggle clicked state
 def toggle_click():
     st.session_state.clicked = True
-    st.balloons()  # Trigger balloon effect
+    st.balloons()
     st.write('<p class="debug-text">Debug: Yo, Chapri button smashed! 💥</p>', unsafe_allow_html=True)
 
 # Function to reset clicked state
@@ -103,16 +103,24 @@ def reset_click():
     st.write('<p class="debug-text">Debug: Back to the chill zone! 😎</p>', unsafe_allow_html=True)
     st.experimental_rerun()
 
-# Function to save uploaded song permanently
+# Function to save uploaded song
 def save_song(uploaded_file):
     try:
-        song_path = "uploaded_song.mp3"  # Fixed name for simplicity
+        song_path = "uploaded_song.mp3"
         with open(song_path, "wb") as f:
             f.write(uploaded_file.read())
-        st.write(f'<p class="debug-text">Debug: Song saved forever at {song_path}! 🎵</p>', unsafe_allow_html=True)
+        st.write(f'<p class="debug-text">Debug: Song saved at {song_path}! 🎵</p>', unsafe_allow_html=True)
+        st.markdown(
+            """
+            <p style="color: #ffffff; font-size: 1.2rem; background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 5px;">
+            Yo, Chapri! Your song is saved! To keep it FOREVER, download it below and commit it to GitHub! 🚀
+            </p>
+            """,
+            unsafe_allow_html=True
+        )
         return song_path
     except Exception as e:
-        st.error(f"Oops, couldn't save the song! 😿 Error: {str(e)}")
+        st.error(f"Oops, couldn’t save the song! 😿 Error: {str(e)}")
         return None
 
 # Button to trigger greeting
@@ -143,7 +151,15 @@ if st.session_state.clicked:
         song_path = save_song(uploaded_file)
         if song_path:
             st.session_state.uploaded_song_path = song_path
-            st.write('<p class="debug-text">Debug: Song locked in for eternity! 🥳</p>', unsafe_allow_html=True)
+            # Provide download button for the song
+            with open(song_path, "rb") as f:
+                st.download_button(
+                    label="Download Song to Commit to GitHub! 📥",
+                    data=f,
+                    file_name="uploaded_song.mp3",
+                    mime="audio/mpeg",
+                    key="download_button"
+                )
 
     # Play Song button
     if st.button("Crank Up the Jam! 🎉", key="play_song"):
@@ -157,6 +173,19 @@ if st.session_state.clicked:
                 st.error(f"Whoa, song didn’t play! 😵 Error: {str(e)}")
         else:
             st.error("No banger uploaded yet! Drop a song, homie! 😎")
+
+# Display saved song if it exists
+if not st.session_state.clicked:
+    song_path = "uploaded_song.mp3"
+    if os.path.exists(song_path):
+        st.markdown('<p class="debug-text">Debug: Found a saved banger! Ready to jam! 🎸</p>', unsafe_allow_html=True)
+        if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
+            try:
+                with open(song_path, "rb") as f:
+                    st.audio(f.read(), format="audio/mp3")
+                st.write('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
 
 # Debugging information
 st.write(f'<p class="debug-text">Debug: Party mode is {"ON 🔥" if st.session_state.clicked else "CHILL ❄️"}</p>', unsafe_allow_html=True)
