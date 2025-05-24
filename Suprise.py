@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import uuid
 
 # Set page configuration
 st.set_page_config(
@@ -59,7 +60,7 @@ st.markdown(
         cursor: pointer;
         display: block;
         text-align: center;
-        z-index: 1001;
+        margin: 20px auto;
     }
     .debug-text {
         color: #ffffff;
@@ -83,30 +84,40 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Directory to store uploaded songs
+UPLOAD_DIR = "uploads"
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
 # Title of the dashboard
 st.markdown('<h1 class="title">Welcome to the Dashboard! 🦄🎶</h1>', unsafe_allow_html=True)
 
 # Initialize session state
 if 'clicked' not in st.session_state:
     st.session_state.clicked = False
+if 'song_path' not in st.session_state:
+    # Check for existing audio files in the upload directory
+    audio_files = [f for f in os.listdir(UPLOAD_DIR) if f.endswith(('.mp3', '.wav', '.ogg'))]
+    st.session_state.song_path = os.path.join(UPLOAD_DIR, audio_files[0]) if audio_files else None
 
 # Function to toggle clicked state
 def toggle_click():
     st.session_state.clicked = True
     st.balloons()
-   
 
 # Function to reset clicked state
 def reset_click():
     st.session_state.clicked = False
-    st.experimental_rerun()
 
 # Function to save uploaded song
 def save_song(uploaded_file):
     try:
-        song_path = "uploaded_song.mp3"
+        # Generate unique filename using UUID to avoid overwrites
+        file_extension = uploaded_file.name.split('.')[-1]
+        song_path = os.path.join(UPLOAD_DIR, f"song_{uuid.uuid4()}.{file_extension}")
         with open(song_path, "wb") as f:
             f.write(uploaded_file.read())
+        st.session_state.song_path = song_path
         st.markdown(
             """
             <p style="color: #ffffff; font-size: 1.2rem; background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 5px;">
@@ -121,35 +132,53 @@ def save_song(uploaded_file):
         return None
 
 # Button to trigger greeting
-if st.button("Smash for Chapri! 😜", key="greet_button", on_click=toggle_click):
-    pass
+if st.button("Smash for Chapri! 😜", key="greet_button"):
+    toggle_click()
 
-# When button is clicked, display greeting, back button, and file uploader
+# When button is clicked, display greeting, file uploader, and back button
 if st.session_state.clicked:
-    # Greeting message with back button
+    # Greeting message
     st.markdown(
         """
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 50%; 
+        <div style="position: relative; width: 100%; height: 50%; 
         display: flex; flex-direction: column; justify-content: center; align-items: center; 
-        background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); z-index: 1000;">
+        background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);">
             <h1 class="greeting">Hello Chapri! 🌈</h1>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Back button
-    if st.button("Back to Party Start! 🚀", key="back_button", on_click=reset_click):
-        pass
+    # File uploader for audio files
+    uploaded_file = st.file_uploader(
+        "Upload your banger song! 🎵 (MP3, WAV, etc.)",
+        type=["mp3", "wav", "ogg"],
+        key="audio_uploader"
+    )
+    
+    if uploaded_file is not None:
+        song_path = save_song(uploaded_file)
+        if song_path:
+            with open(song_path, "rb") as f:
+                st.audio(f.read(), format=uploaded_file.type)
+            st.download_button(
+                label="Download Your Banger! 💾",
+                data=open(song_path, "rb"),
+                file_name=uploaded_file.name,
+                mime=uploaded_file.type,
+                key="download_song"
+            )
 
-# Display saved song if it exists
-if not st.session_state.clicked:
-    song_path = "uploaded_song.mp3"
-    if os.path.exists(song_path):
-        if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
-            try:
-                with open(song_path, "rb") as f:
-                    st.audio(f.read(), format="audio/mp3")
-                st.write('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
+    # Back button
+    if st.button("Back to Party Start! 🚀", key="back_button"):
+        reset_click()
+
+# Display saved song if it exists and not on greeting page
+if not st.session_state.clicked and st.session_state.song_path and os.path.exists(st.session_state.song_path):
+    if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
+        try:
+            with open(st.session_state.song_path, "rb") as f:
+                st.audio(f.read(), format="audio/mp3")
+            st.write('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
