@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Title of the dashboard
-st.title("Welcome to the Dashboard!")
+st.title("Welcome to the Chapri Dashboard!")
 
 # Initialize session state for button click
 if 'clicked' not in st.session_state:
@@ -41,17 +41,26 @@ if st.session_state.clicked:
     
     # JavaScript for confetti effect and audio playback
     confetti_script = """
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.min.js"></script>
     <script>
-        // Trigger confetti effect
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
+        // Wait for the document to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if confetti is available
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            } else {
+                console.error('Confetti library not loaded');
+            }
+            // Play confetti sound
+            var audio = new Audio('https://cdn.pixabay.com/audio/2023/06/08/audio_5d3a4b5e67.mp3');
+            audio.play().catch(function(error) {
+                console.error('Audio playback failed:', error);
+            });
         });
-        // Play confetti sound
-        var audio = new Audio('https://cdn.pixabay.com/audio/2023/06/08/audio_5d3a4b5e67.mp3');
-        audio.play();
     </script>
     """
     html(confetti_script, height=0)
