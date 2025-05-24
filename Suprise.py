@@ -158,5 +158,3 @@ if not st.session_state.clicked:
             except Exception as e:
                 st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
 
-# Debugging information
-st.write(f'<p class="debug-text">Debug: Party mode is {"ON 🔥" if st.session_state.clicked else "CHILL ❄️"}</p>', unsafe_allow_html=True)
