@@ -45,6 +45,9 @@ st.markdown("""
 
 # ---- Sound Effect Function ----
 def autoplay_audio(file_path: str, key: str = None):
+    if 'audio_warning_shown' not in st.session_state:
+        st.session_state.audio_warning_shown = set()
+    
     try:
         with open(file_path, "rb") as f:
             data = f.read()
@@ -56,9 +59,13 @@ def autoplay_audio(file_path: str, key: str = None):
             """
             st.markdown(md, unsafe_allow_html=True)
     except FileNotFoundError:
-        st.error(f"⚠️ Audio file '{file_path}' not found! Please ensure it’s in the same directory as Suprise.py.")
+        if file_path not in st.session_state.audio_warning_shown:
+            st.warning(f"⚠️ Audio file '{file_path}' not found! Place it in the same directory as Suprise.py or in an 'audio/' subfolder.")
+            st.session_state.audio_warning_shown.add(file_path)
     except Exception as e:
-        st.error(f"⚠️ Error loading audio '{file_path}': {str(e)}")
+        if file_path not in st.session_state.audio_warning_shown:
+            st.error(f"⚠️ Error loading audio '{file_path}': {str(e)}")
+            st.session_state.audio_warning_shown.add(file_path)
 
 # ---- Welcome Section ----
 st.title("🎉 Bestie Fun Fiesta! 🎈")
@@ -94,10 +101,10 @@ else:
         score = st.session_state.get("score", 0)
         q_keys = list(questions.keys())
 
-        # Progress bar
-        progress = (q_num / len(q_keys)) * 100
+        # Progress bar (fixed to use 0-1 range)
+        progress = q_num / len(q_keys)  # Value between 0 and 1
         st.progress(progress)
-        st.markdown(f"<div class='progress-bar'>Progress: {q_num}/{len(q_keys)} Questions</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='progress-bar'>Progress: {q_num}/{len(q_keys)} Questions ({int(progress * 100)}%)</div>", unsafe_allow_html=True)
 
         if q_num < len(q_keys):
             current_q = q_keys[q_num]
@@ -188,7 +195,10 @@ else:
                     autoplay_audio("win.mp3", key="hero_win")
                     st.image("https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif", width=300)
                     st.balloons()
-                    st.confetti()
+                    try:
+                        st.confetti()
+                    except AttributeError:
+                        st.balloons()
                 else:
                     st.warning("😂 Almost a hero, but not quite! Try Intense Gaze, Bold Warrior, Heroic Shout!")
                     autoplay_audio("try_again.mp3", key="hero_try")
@@ -220,4 +230,4 @@ else:
 
 # ---- Footer ----
 st.markdown("---")
-st.caption("💃 Made with Tollywood Masala & Streamlit Swag! ")
+st.caption("💃 Made with Tollywood Masala & Streamlit Swag! 🎬")
