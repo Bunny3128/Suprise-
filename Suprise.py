@@ -129,19 +129,20 @@ if st.button("Smash for Chapri! 😜", key="greet_button", on_click=toggle_click
 
 # When button is clicked, display greeting, back button, and file uploader
 if st.session_state.clicked:
-    # Greeting message
+    # Greeting message with back button
     st.markdown(
         """
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 50%; 
         display: flex; flex-direction: column; justify-content: center; align-items: center; 
         background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff); z-index: 1000;">
             <h1 class="greeting">Hello Chapri! 🌈</h1>
+            <button class="back-button" onclick="window.location.reload()">Back to Party Start! 🚀</button>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Back button
+    # Back button functionality handled by Streamlit
     if st.button("Back to Party Start! 🚀", key="back_button"):
         reset_click()
 
@@ -157,4 +158,3 @@ if not st.session_state.clicked:
                 st.write('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
-
