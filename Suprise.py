@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Title of the dashboard
-st.title("Welcome to the Chapri Dashboard!")
+st.title("Welcome to the Dashboard!")
 
 # Initialize session state for button click
 if 'clicked' not in st.session_state:
