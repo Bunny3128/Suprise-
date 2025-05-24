@@ -66,7 +66,7 @@ if not st.session_state.start:
         st.session_state.start = True
         autoplay_audio("hello.mp3", key="hello_audio")
         st.balloons()
-        st.experimental_rerun()
+        st.rerun()
 else:
     st.success("🎬 You're the Hero of This Fun Show, Bestie! 🌟")
     st.markdown("### Feeling Bored? Let’s Light Up Your Day! 🔥")
@@ -103,11 +103,14 @@ else:
                     st.warning("😂 Oops, not quite! Try the next one!")
                 st.session_state.q_num = q_num + 1
                 st.session_state.score = score
-                st.experimental_rerun()
+                st.rerun()
         else:
             st.success(f"🎥 Quiz Done! You scored {score} out of {len(q_keys)}! 😎")
             autoplay_audio("clap.mp3", key="clap_audio")
-            st.confetti()
+            try:
+                st.confetti()  # May not be available in older versions
+            except AttributeError:
+                st.balloons()  # Fallback to balloons if confetti is unavailable
             if "show_puzzle_button" not in st.session_state:
                 st.session_state.show_puzzle_button = True
 
@@ -116,7 +119,7 @@ else:
                     st.session_state.puzzle = True
                     st.session_state.show_puzzle_button = False
                     autoplay_audio("game_start.mp3", key="game_start_audio")
-                    st.experimental_rerun()
+                    st.rerun()
 
     # ---- Puzzle Games Section ----
     if st.session_state.get("puzzle", False):
@@ -198,14 +201,17 @@ else:
         autoplay_audio("victory.mp3", key="victory_audio")
         st.markdown("You’ve conquered the Fun Fiesta! Thanks for rocking it! 💖")
         st.snow()
-        st.confetti()
+        try:
+            st.confetti()
+        except AttributeError:
+            st.balloons()  # Fallback to balloons if confetti is unavailable
         if st.button("Play Again? 🔄", key="play_again"):
             st.session_state.start = False
             st.session_state.q_num = 0
             st.session_state.score = 0
             st.session_state.puzzle = False
             st.session_state.show_puzzle_button = False
-            st.experimental_rerun()
+            st.rerun()
 
     elif mood == "Nah, I'm vibing!":
         st.info("😎 You’re already in the Tollywood groove! Here’s a celebratory hug! 🤗")
