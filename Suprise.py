@@ -26,26 +26,30 @@ def toggle_click():
 if st.button("Click Here", on_click=toggle_click):
     pass
 
-# When button is clicked, display message and play sound
+# When button is clicked, display message, button, and play sound
 if st.session_state.clicked:
-    # Full-screen message
+    # Full-screen message with Play Sound button
     st.markdown(
         """
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        display: flex; justify-content: center; align-items: center; 
+        display: flex; flex-direction: column; justify-content: center; align-items: center; 
         background-color: rgba(0, 0, 0, 0.8); z-index: 1000;">
-            <h1 style="color: white; font-size: 5rem; text-align: center;">
+            <h1 style="color: white; font-size: 5rem; text-align: center; margin-bottom: 20px;">
                 Hello Chapri
             </h1>
+            <button onclick="var audio = new Audio('https://cdn.pixabay.com/audio/2023/06/08/audio_5d3a4b5e67.mp3'); audio.play();" 
+                style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
+                Play Sound
+            </button>
         </div>
         """,
         unsafe_allow_html=True
     )
     
-    # JavaScript for audio playback
+    # JavaScript for automatic audio playback
     audio_script = """
     <script>
-        // Play confetti sound
+        // Play confetti sound automatically
         document.addEventListener('DOMContentLoaded', function() {
             var audio = new Audio('https://cdn.pixabay.com/audio/2023/06/08/audio_5d3a4b5e67.mp3');
             audio.play().catch(function(error) {
