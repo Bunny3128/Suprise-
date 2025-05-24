@@ -4,7 +4,7 @@ from streamlit.components.v1 import html
 # Set page configuration
 st.set_page_config(
     page_title="Chapri Dashboard",
-    page_icon="🎉",
+    page_icon="🎈",
     layout="wide"
 )
 
@@ -18,12 +18,15 @@ if 'clicked' not in st.session_state:
 # Function to toggle clicked state
 def toggle_click():
     st.session_state.clicked = not st.session_state.clicked
+    if st.session_state.clicked:
+        # Trigger balloon effect when button is clicked
+        st.balloons()
 
 # Button to trigger the effect
 if st.button("Click Here", on_click=toggle_click):
     pass
 
-# When button is clicked, display message, confetti, and play sound
+# When button is clicked, display message and play sound
 if st.session_state.clicked:
     # Full-screen message
     st.markdown(
@@ -39,23 +42,11 @@ if st.session_state.clicked:
         unsafe_allow_html=True
     )
     
-    # JavaScript for confetti effect and audio playback
-    confetti_script = """
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.min.js"></script>
+    # JavaScript for audio playback
+    audio_script = """
     <script>
-        // Wait for the document to be fully loaded
+        // Play confetti sound
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if confetti is available
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 150,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                });
-            } else {
-                console.error('Confetti library not loaded');
-            }
-            // Play confetti sound
             var audio = new Audio('https://cdn.pixabay.com/audio/2023/06/08/audio_5d3a4b5e67.mp3');
             audio.play().catch(function(error) {
                 console.error('Audio playback failed:', error);
@@ -63,4 +54,4 @@ if st.session_state.clicked:
         });
     </script>
     """
-    html(confetti_script, height=0)
+    html(audio_script, height=0)
