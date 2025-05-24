@@ -145,20 +145,6 @@ if st.session_state.clicked:
     if st.button("Back to Party Start! 🚀", key="back_button"):
         reset_click()
 
-
-    # Play Song button
-    if st.button("Crank Up the Jam! 🎉", key="play_song"):
-        song_path = getattr(st.session_state, 'uploaded_song_path', None)
-        if song_path and os.path.exists(song_path):
-            try:
-                with open(song_path, "rb") as f:
-                    st.audio(f.read(), format="audio/mp3")
-                st.write('<p class="debug-text">Debug: Jammin’ to the saved song! 😍</p>', unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"Whoa, song didn’t play! 😵 Error: {str(e)}")
-        else:
-            st.error("No banger uploaded yet! Drop a song, homie! 😎")
-
 # Display saved song if it exists
 if not st.session_state.clicked:
     song_path = "uploaded_song.mp3"
