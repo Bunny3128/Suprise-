@@ -109,33 +109,11 @@ def toggle_click():
 def reset_click():
     st.session_state.clicked = False
 
-# Function to save uploaded song
-def save_song(uploaded_file):
-    try:
-        # Generate unique filename using UUID to avoid overwrites
-        file_extension = uploaded_file.name.split('.')[-1]
-        song_path = os.path.join(UPLOAD_DIR, f"song_{uuid.uuid4()}.{file_extension}")
-        with open(song_path, "wb") as f:
-            f.write(uploaded_file.read())
-        st.session_state.song_path = song_path
-        st.markdown(
-            """
-            <p style="color: #ffffff; font-size: 1.2rem; background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 5px;">
-            Yo, Chapri! Your song is saved! To keep it FOREVER, download it below and commit it to GitHub! 🚀
-            </p>
-            """,
-            unsafe_allow_html=True
-        )
-        return song_path
-    except Exception as e:
-        st.error(f"Oops, couldn’t save the song! 😿 Error: {str(e)}")
-        return None
-
 # Button to trigger greeting
 if st.button("Smash for Chapri! 😜", key="greet_button"):
     toggle_click()
 
-# When button is clicked, display greeting, file uploader, and back button
+# When button is clicked, display greeting and back button
 if st.session_state.clicked:
     # Greeting message
     st.markdown(
@@ -148,26 +126,6 @@ if st.session_state.clicked:
         """,
         unsafe_allow_html=True
     )
-
-    # File uploader for audio files
-    uploaded_file = st.file_uploader(
-        "Upload your banger song! 🎵 (MP3, WAV, etc.)",
-        type=["mp3", "wav", "ogg"],
-        key="audio_uploader"
-    )
-    
-    if uploaded_file is not None:
-        song_path = save_song(uploaded_file)
-        if song_path:
-            with open(song_path, "rb") as f:
-                st.audio(f.read(), format=uploaded_file.type)
-            st.download_button(
-                label="Download Your Banger! 💾",
-                data=open(song_path, "rb"),
-                file_name=uploaded_file.name,
-                mime=uploaded_file.type,
-                key="download_song"
-            )
 
     # Back button
     if st.button("Back to Party Start! 🚀", key="back_button"):
