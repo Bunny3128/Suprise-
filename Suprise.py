@@ -111,11 +111,18 @@ if 'song_path' not in st.session_state:
     # Check for existing audio files in the upload directory
     audio_files = [f for f in os.listdir(UPLOAD_DIR) if f.endswith(('.mp3', '.wav', '.ogg'))]
     st.session_state.song_path = os.path.join(UPLOAD_DIR, audio_files[0]) if audio_files else None
+if 'show_uploader' not in st.session_state:
+    st.session_state.show_uploader = False
 
 # Function to toggle clicked state
 def toggle_click():
     st.session_state.clicked = True
+    st.session_state.show_uploader = False
     st.balloons()
+
+# Function to toggle uploader visibility
+def toggle_uploader():
+    st.session_state.show_uploader = True
 
 # Function to save uploaded song
 def save_song(uploaded_file):
@@ -161,28 +168,8 @@ if st.session_state.clicked:
             unsafe_allow_html=True
         )
 
-    # File uploader for audio files
-    uploaded_file = st.file_uploader(
-        "Upload your banger song! 🎵 (MP3, WAV, etc.)",
-        type=["mp3", "wav", "ogg"],
-        key="audio_uploader"
-    )
-
-    if uploaded_file is not None:
-        song_path = save_song(uploaded_file)
-        if song_path:
-            with open(song_path, "rb") as f:
-                st.audio(f.read(), format=uploaded_file.type)
-            st.download_button(
-                label="Download Your Banger! 💾",
-                data=open(song_path, "rb"),
-                file_name=uploaded_file.name,
-                mime=uploaded_file.type,
-                key="download_song"
-            )
-
     # Play Saved Banger button functionality
-    if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
+    if st.button("Play Saved Banger! 🎵", key="play_saved_song", on_click=toggle_uploader):
         if st.session_state.song_path and os.path.exists(st.session_state.song_path):
             try:
                 with open(st.session_state.song_path, "rb") as f:
@@ -191,4 +178,24 @@ if st.session_state.clicked:
             except Exception as e:
                 st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
         else:
-            st.error("No saved banger found! Upload a song first! 😿")
+            st.error("No saved banger found! Upload a song below! 😿")
+
+    # Show file uploader only after clicking Play Saved Banger
+    if st.session_state.show_uploader:
+        uploaded_file = st.file_uploader(
+            "Upload your banger song! 🎵 (MP3, WAV, etc.)",
+            type=["mp3", "wav", "ogg"],
+            key="audio_uploader"
+        )
+        if uploaded_file is not None:
+            song_path = save_song(uploaded_file)
+            if song_path:
+                with open(song_path, "rb") as f:
+                    st.audio(f.read(), format=uploaded_file.type)
+                st.download_button(
+                    label="Download Your Banger! 💾",
+                    data=open(song_path, "rb"),
+                    file_name=uploaded_file.name,
+                    mime=uploaded_file.type,
+                    key="download_song"
+                )
