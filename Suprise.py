@@ -20,7 +20,7 @@ st.markdown("""
 
 # ---- Welcome ----
 st.title("🎈 Hello Bestie! 🎈")
-st.markdown("<p class='big-font'>Welcome to the Most FUN App Made Just for You! 💖</p>", unsafe_allow_html=True)
+st.markdown("<p class='big-font'>Welcome to the Most FUN App ✨</p>", unsafe_allow_html=True)
 
 if 'start' not in st.session_state:
     st.session_state.start = False
