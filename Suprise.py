@@ -43,6 +43,7 @@ st.markdown(
         padding: 10px 20px;
         border: 2px solid #d81b60;
         transition: transform 0.2s;
+        margin: 10px;
     }
     .stButton>button:hover {
         transform: scale(1.1);
@@ -67,6 +68,7 @@ st.markdown(
         background-color: rgba(0, 0, 0, 0.7);
         padding: 10px;
         border-radius: 5px;
+        text-align: center;
     }
     @keyframes bounce {
         0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
@@ -118,35 +120,41 @@ def toggle_click():
 def reset_click():
     st.session_state.clicked = False
 
-# When not clicked, show the home page
+# Home page
 if not st.session_state.clicked:
     # Title of the dashboard
     st.markdown('<h1 class="title">Welcome to the Dashboard! 🦄🎶</h1>', unsafe_allow_html=True)
 
-    # Smash for Chapri button
-    st.button("Smash for Chapri! 😜", key="greet_button", on_click=toggle_click)
+    # Create two columns for buttons
+    col1, col2 = st.columns([1, 1])
 
-    # Display saved song if it exists
+    # Smash for Chapri button in the first column
+    with col1:
+        st.button("Smash for Chapri! 😜", key="greet_button", on_click=toggle_click)
+
+    # Play Saved Banger button in the second column if a song exists
     if st.session_state.song_path and os.path.exists(st.session_state.song_path):
-        if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
-            try:
-                with open(st.session_state.song_path, "rb") as f:
-                    st.audio(f.read(), format="audio/mp3")
-                st.write('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
+        with col2:
+            if st.button("Play Saved Banger! 🎵", key="play_saved_song"):
+                try:
+                    with open(st.session_state.song_path, "rb") as f:
+                        st.audio(f.read(), format="audio/mp3")
+                    st.markdown('<p class="debug-text">Debug: Rockin’ the saved song! 🤘</p>', unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"Can’t play the saved song! 😿 Error: {str(e)}")
 
-# When button is clicked, display full-screen greeting and back button
+# Greeting page
 if st.session_state.clicked:
-    st.markdown(
-        """
-        <div class="fullscreen">
-            <h1 class="greeting">Hello Chapri! 🌈</h1>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # Back button
-    if st.button("Back to Party Start! 🚀", key="back_button"):
-        reset_click()
+    # Full-screen greeting
+    with st.container():
+        st.markdown(
+            """
+            <div class="fullscreen">
+                <h1 class="greeting">Hello Chapri! 🌈</h1>
+                <button class="back-button" onclick="window.location.reload()">Back to Party Start! 🚀</button>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    # Streamlit button for functionality (hidden by CSS)
+    st.button("Back to Party Start! 🚀", key="back_button", on_click=reset_click)
