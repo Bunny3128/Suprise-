@@ -22,6 +22,10 @@ def toggle_click():
         # Trigger balloon effect when button is clicked
         st.balloons()
 
+# Function to reset clicked state
+def reset_click():
+    st.session_state.clicked = False
+
 # Generate a soothing sound (220 Hz + 440 Hz chord, 3 seconds)
 def generate_soothing_sound():
     sample_rate = 44100  # Samples per second
@@ -35,7 +39,7 @@ def generate_soothing_sound():
 if st.button("Click Here", on_click=toggle_click):
     pass
 
-# When button is clicked, display message, file uploader, and play soothing sound
+# When button is clicked, display message, back button, file uploader, and play soothing sound
 if st.session_state.clicked:
     # Full-screen message
     st.markdown(
@@ -50,7 +54,11 @@ if st.session_state.clicked:
         """,
         unsafe_allow_html=True
     )
-    
+
+    # Back button to return to initial state
+    if st.button("Back", on_click=reset_click):
+        pass
+
     # Generate and play soothing sound automatically
     note, sample_rate = generate_soothing_sound()
     st.audio(note, sample_rate=sample_rate, autoplay=True)
