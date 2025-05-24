@@ -22,22 +22,22 @@ def toggle_click():
         # Trigger balloon effect when button is clicked
         st.balloons()
 
-# Generate a 440 Hz sine wave sound (2 seconds)
-def generate_sound():
+# Generate a soothing sound (220 Hz + 440 Hz chord, 3 seconds)
+def generate_soothing_sound():
     sample_rate = 44100  # Samples per second
-    seconds = 2  # Duration
-    frequency = 440  # 440 Hz (A4 note)
+    seconds = 3  # Duration
     t = np.linspace(0, seconds, seconds * sample_rate, False)
-    note = np.sin(frequency * t * 2 * np.pi)
+    # Combine 220 Hz and 440 Hz for a soothing chord
+    note = 0.5 * np.sin(220 * t * 2 * np.pi) + 0.5 * np.sin(440 * t * 2 * np.pi)
     return note, sample_rate
 
 # Button to trigger the effect
 if st.button("Click Here", on_click=toggle_click):
     pass
 
-# When button is clicked, display message, play sound button, and audio
+# When button is clicked, display message, file uploader, and play soothing sound
 if st.session_state.clicked:
-    # Full-screen message with Play Sound button
+    # Full-screen message
     st.markdown(
         """
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -46,15 +46,19 @@ if st.session_state.clicked:
             <h1 style="color: white; font-size: 5rem; text-align: center; margin-bottom: 20px;">
                 Hello Chapri
             </h1>
-            <button onclick="document.getElementById('audio').play()" 
-                style="padding: 10px 20px; font-size: 1.2rem; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">
-                Play Sound
-            </button>
         </div>
         """,
         unsafe_allow_html=True
     )
     
-    # Generate and play sound
-    note, sample_rate = generate_sound()
+    # Generate and play soothing sound automatically
+    note, sample_rate = generate_soothing_sound()
     st.audio(note, sample_rate=sample_rate, autoplay=True)
+    
+    # File uploader for song
+    uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"])
+    
+    # Play Song button
+    if uploaded_file is not None:
+        if st.button("Play Song"):
+            st.audio(uploaded_file, format=uploaded_file.type)
