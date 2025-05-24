@@ -96,10 +96,10 @@ else:
         game_choice = st.radio("Choose your puzzle:", ["Jigsaw Word Puzzle", "Number Maze", "Emoji Movie Decode"])
 
         if game_choice == "Jigsaw Word Puzzle":
-            st.write("🔤 Rearrange these jumbled letters to form a word: **LCOHESO**")
+            st.write("🔤 Rearrange these jumbled letters to form a word: **ACPHRI**")
             word_ans = st.text_input("Your answer:").lower()
             if st.button("Check Word"):
-                if word_ans == "school":
+                if word_ans == "CHAPRI":
                     st.success("You nailed it! 📚")
                     st.balloons()
                 else:
