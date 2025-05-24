@@ -13,38 +13,39 @@ st.set_page_config(
 # Title of the dashboard
 st.title("Welcome to the Chapri Dashboard!")
 
-# Initialize session state for button click
+# Initialize session state
 if 'clicked' not in st.session_state:
     st.session_state.clicked = False
+if 'uploaded_song' not in st.session_state:
+    st.session_state.uploaded_song = None
+if 'uploaded_song_type' not in st.session_state:
+    st.session_state.uploaded_song_type = None
 
 # Function to toggle clicked state
 def toggle_click():
     st.session_state.clicked = True
     st.balloons()  # Trigger balloon effect
-    st.write("Debug: Click Here button triggered")  # Debug log
+    st.write("Debug: Click Here button triggered")
 
 # Function to reset clicked state
 def reset_click():
     st.session_state.clicked = False
-    st.write("Debug: Back button triggered")  # Debug log
-    st.experimental_rerun()  # Force refresh to ensure state reset
+    st.write("Debug: Back button triggered")
+    st.experimental_rerun()  # Force refresh
 
 # Generate a soothing sound (220 Hz + 440 Hz chord, 3 seconds) as WAV
 def generate_soothing_sound():
     try:
-        sample_rate = 44100  # Samples per second
-        seconds = 3  # Duration
+        sample_rate = 44100
+        seconds = 3
         t = np.linspace(0, seconds, int(seconds * sample_rate), False)
-        # Combine 220 Hz and 440 Hz for a soothing chord
         note = 0.5 * np.sin(220 * t * 2 * np.pi) + 0.5 * np.sin(440 * t * 2 * np.pi)
-        # Normalize to 16-bit PCM format
         note = np.int16(note / np.max(np.abs(note)) * 32767)
         
-        # Create WAV file in memory
         buffer = io.BytesIO()
         with wave.open(buffer, 'wb') as wav:
-            wav.setnchannels(1)  # Mono
-            wav.setsampwidth(2)  # 16-bit
+            wav.setnchannels(1)
+            wav.setsampwidth(2)
             wav.setframerate(sample_rate)
             wav.writeframes(note.tobytes())
         
@@ -58,9 +59,9 @@ def generate_soothing_sound():
 if st.button("Click Here", key="click_here", on_click=toggle_click):
     pass
 
-# When button is clicked, display message, back button, file uploader, and play soothing sound
+# When button is clicked, display message, back button, file uploader, and play sound
 if st.session_state.clicked:
-    # Full-screen message with space for buttons below
+    # Full-screen message
     st.markdown(
         """
         <div style="position: fixed; top: 0; left: 0; width: 100%; height: 50%; 
@@ -74,7 +75,7 @@ if st.session_state.clicked:
         unsafe_allow_html=True
     )
 
-    # Back button styled for visibility
+    # Back button styling
     st.markdown(
         """
         <style>
@@ -86,10 +87,10 @@ if st.session_state.clicked:
             font-size: 16px; 
             font-weight: bold;
             cursor: pointer;
-            margin-top: 55vh; /* Adjusted for smaller overlay */
+            margin-top: 55vh;
             display: block;
             text-align: center;
-            z-index: 1001; /* Ensure button is above overlay */
+            z-index: 1001;
         }
         </style>
         """,
@@ -103,7 +104,7 @@ if st.session_state.clicked:
     if audio_buffer:
         try:
             st.audio(audio_buffer, format="audio/wav")
-            st.write("Debug: Soothing sound should be playing")  # Confirm audio attempt
+            st.write("Debug: Soothing sound attempted")
         except Exception as e:
             st.error(f"Error playing soothing sound: {str(e)}")
     else:
@@ -111,12 +112,17 @@ if st.session_state.clicked:
 
     # File uploader for song
     uploaded_file = st.file_uploader("Upload a song (MP3 or WAV)", type=["mp3", "wav"], key="file_uploader")
-    
+    if uploaded_file is not None:
+        st.session_state.uploaded_song = uploaded_file.read()  # Store file in session state
+        st.session_state.uploaded_song_type = uploaded_file.type
+        st.write("Debug: Song uploaded and stored in session state")
+
     # Play Song button
     if st.button("Play Song", key="play_song"):
-        if uploaded_file is not None:
+        if st.session_state.uploaded_song is not None:
             try:
-                st.audio(uploaded_file, format=uploaded_file.type)
+                st.audio(st.session_state.uploaded_song, format=st.session_state.uploaded_song_type)
+                st.write("Debug: Playing uploaded song")
             except Exception as e:
                 st.error(f"Error playing uploaded song: {str(e)}")
         else:
