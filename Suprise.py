@@ -85,7 +85,7 @@ st.markdown(
 )
 
 # Title of the dashboard
-st.markdown('<h1 class="title">Welcome to the Chapri Party Zone! 🦄🎶</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="title">Welcome to the Dashboard! 🦄🎶</h1>', unsafe_allow_html=True)
 
 # Initialize session state
 if 'clicked' not in st.session_state:
@@ -145,21 +145,6 @@ if st.session_state.clicked:
     if st.button("Back to Party Start! 🚀", key="back_button"):
         reset_click()
 
-    # File uploader for song
-    uploaded_file = st.file_uploader("Drop a banger (MP3 or WAV)! 🎧", type=["mp3", "wav"], key="file_uploader")
-    if uploaded_file is not None:
-        song_path = save_song(uploaded_file)
-        if song_path:
-            st.session_state.uploaded_song_path = song_path
-            # Provide download button for the song
-            with open(song_path, "rb") as f:
-                st.download_button(
-                    label="Download Song to Commit to GitHub! 📥",
-                    data=f,
-                    file_name="uploaded_song.mp3",
-                    mime="audio/mpeg",
-                    key="download_button"
-                )
 
     # Play Song button
     if st.button("Crank Up the Jam! 🎉", key="play_song"):
